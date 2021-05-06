@@ -5,6 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/custom_dropdown.dart';
 import '../colors.dart';
 
+import 'dart:convert';
+import '../../network/recipe_model.dart';
+import 'package:flutter/services.dart';
+import '../recipe_card.dart';
+import 'recipe_details.dart';
+import '../../network/recipe_service.dart';
+
 class RecipeList extends StatefulWidget {
   const RecipeList({Key key}) : super(key: key);
 
@@ -17,7 +24,7 @@ class _RecipeListState extends State<RecipeList> {
 
   TextEditingController searchTextController;
   final _scrollController = ScrollController();
-  List currentSearchList = List();
+  List<APIHits> currentSearchList = List();
   int currentCount = 0;
   int currentStartPosition = 0;
   int currentEndPosition = 20;
@@ -30,6 +37,7 @@ class _RecipeListState extends State<RecipeList> {
   @override
   void initState() {
     super.initState();
+
     getPreviousSearches();
     searchTextController = TextEditingController(text: '');
     _scrollController
@@ -51,6 +59,16 @@ class _RecipeListState extends State<RecipeList> {
           }
         }
       });
+  }
+
+  // 1
+  Future<APIRecipeQuery> getRecipeData(String query, int from, int to) async {
+    // 2
+    final recipeJson = await RecipeService().getRecipes(query, from, to);
+    // 3
+    final recipeMap = json.decode(recipeJson);
+    // 4
+    return APIRecipeQuery.fromJson(recipeMap);
   }
 
   @override
@@ -197,12 +215,96 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   Widget _buildRecipeLoader(BuildContext context) {
+    // 1
     if (searchTextController.text.length < 3) {
       return Container();
     }
-    // Show a loading indicator while waiting for the movies
-    return const Center(
-      child: CircularProgressIndicator(),
+    // 2
+    return FutureBuilder<APIRecipeQuery>(
+      // 3
+      future: getRecipeData(searchTextController.text.trim(),
+          currentStartPosition, currentEndPosition),
+      // 4
+      builder: (context, snapshot) {
+        // 5
+        if (snapshot.connectionState == ConnectionState.done) {
+          // 6
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString(),
+                  textAlign: TextAlign.center, textScaleFactor: 1.3),
+            );
+          }
+
+          // 7
+          loading = false;
+          final query = snapshot.data;
+          inErrorState = false;
+          currentCount = query.count;
+          hasMore = query.more;
+          currentSearchList.addAll(query.hits);
+          // 8
+          if (query.to < currentEndPosition) {
+            currentEndPosition = query.to;
+          }
+          // 9
+          return _buildRecipeList(context, currentSearchList);
+        }
+        // 10
+        else {
+          // 11
+          if (currentCount == 0) {
+            // Show a loading indicator while waiting for the movies
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            // 12
+            return _buildRecipeList(context, currentSearchList);
+          }
+        }
+      },
+    );
+  }
+
+  // 1
+  Widget _buildRecipeList(BuildContext recipeListContext, List<APIHits> hits) {
+    // 2
+    final size = MediaQuery.of(context).size;
+    const itemHeight = 310;
+    final itemWidth = size.width / 2;
+    // 3
+    return Flexible(
+      // 4
+      child: GridView.builder(
+        // 5
+        controller: _scrollController,
+        // 6
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: (itemWidth / itemHeight),
+        ),
+        // 7
+        itemCount: hits.length,
+        // 8
+        itemBuilder: (BuildContext context, int index) {
+          return _buildRecipeCard(recipeListContext, hits, index);
+        },
+      ),
+    );
+  }
+
+  Widget _buildRecipeCard(BuildContext context, List<APIHits> hits, int index) {
+    // 1
+    final recipe = hits[index].recipe;
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) {
+            return const RecipeDetails();
+          },
+        ));
+      },
+      // 2
+      child: recipeCard(recipe),
     );
   }
 }
