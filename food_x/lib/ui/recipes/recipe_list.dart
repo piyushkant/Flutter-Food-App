@@ -5,7 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/custom_dropdown.dart';
 import '../colors.dart';
 
-import 'dart:convert';
+import 'package:chopper/chopper.dart';
+import '../../network/model_response.dart';
 import '../../network/recipe_model.dart';
 import 'package:flutter/services.dart';
 import '../recipe_card.dart';
@@ -59,16 +60,6 @@ class _RecipeListState extends State<RecipeList> {
           }
         }
       });
-  }
-
-  // 1
-  Future<APIRecipeQuery> getRecipeData(String query, int from, int to) async {
-    // 2
-    final recipeJson = await RecipeService().getRecipes(query, from, to);
-    // 3
-    final recipeMap = json.decode(recipeJson);
-    // 4
-    return APIRecipeQuery.fromJson(recipeMap);
   }
 
   @override
@@ -220,10 +211,13 @@ class _RecipeListState extends State<RecipeList> {
       return Container();
     }
     // 2
-    return FutureBuilder<APIRecipeQuery>(
+    return FutureBuilder<Response<Result<APIRecipeQuery>>>(
       // 3
-      future: getRecipeData(searchTextController.text.trim(),
-          currentStartPosition, currentEndPosition),
+      future: RecipeService.create().queryRecipes(
+          searchTextController.text.trim(),
+          currentStartPosition,
+          currentEndPosition),
+
       // 4
       builder: (context, snapshot) {
         // 5
@@ -238,7 +232,17 @@ class _RecipeListState extends State<RecipeList> {
 
           // 7
           loading = false;
-          final query = snapshot.data;
+          // 1
+          final result = snapshot.data.body;
+          // 2
+          if (result is Error) {
+            // Hit an error
+            inErrorState = true;
+            return _buildRecipeList(context, currentSearchList);
+          }
+          // 3
+          final query = (result as Success).value;
+
           inErrorState = false;
           currentCount = query.count;
           hasMore = query.more;
