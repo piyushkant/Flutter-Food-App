@@ -1,23 +1,17 @@
 import 'dart:convert';
 import 'dart:math';
 
-// 1
 import 'package:chopper/chopper.dart';
-
-// 2
 import 'package:flutter/services.dart' show rootBundle;
 import '../network/model_response.dart';
 import '../network/recipe_model.dart';
+import '../network/service_interface.dart';
 
-class MockService {
-  // 1
+class MockService implements ServiceInterface {
   APIRecipeQuery _currentRecipes1;
   APIRecipeQuery _currentRecipes2;
-
-  // 2
   Random nextRecipe = Random();
 
-// 3
   void create() {
     loadRecipes();
   }
@@ -29,12 +23,11 @@ class MockService {
     _currentRecipes2 = APIRecipeQuery.fromJson(jsonDecode(jsonString));
   }
 
+  @override
   Future<Response<Result<APIRecipeQuery>>> queryRecipes(
       String query, int from, int to) {
-    // 6
     switch (nextRecipe.nextInt(2)) {
       case 0:
-        // 7
         return Future.value(
             Response(null, Success<APIRecipeQuery>(_currentRecipes1)));
       case 1:
