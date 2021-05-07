@@ -4,6 +4,7 @@ import 'package:food_x/ui/main_screen.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'data/memory_repository.dart';
+import 'mock_service/mock_service.dart';
 
 Future<void> main() async {
   _setupLogging();
@@ -24,13 +25,27 @@ class MyApp extends StatelessWidget {
   const MyApp({Key key}) : super(key: key);
 
   Widget build(BuildContext context) {
-    // 1
-    return ChangeNotifierProvider<MemoryRepository>(
-        // 2
-        lazy: false,
-        // 3
-        create: (_) => MemoryRepository(),
-        // 4
+    return MultiProvider(
+        // 1
+        providers: [
+          // 2
+          ChangeNotifierProvider<MemoryRepository>(
+            lazy: false,
+            create: (_) => MemoryRepository(),
+          ),
+          // 3
+          FutureProvider(
+            // 4
+            create: (_) async {
+              final service = MockService();
+              // 5
+              service.create();
+              return service;
+            },
+            lazy: false,
+          ),
+        ],
+        // 6
         child: MaterialApp(
           title: 'Recipes',
           debugShowCheckedModeBanner: false,
