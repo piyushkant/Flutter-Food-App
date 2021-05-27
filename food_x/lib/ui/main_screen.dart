@@ -2,7 +2,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'myrecipes/my_recipes_list.dart';
+import 'myrecipes/saved_item_list.dart';
 import 'recipes/recipe_list.dart';
 import 'shopping/shopping_list.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +24,6 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     pageList.add(const RecipeList());
     pageList.add(const MyRecipesList());
-    pageList.add(const ShoppingList());
     getCurrentIndex();
   }
 
@@ -57,10 +56,7 @@ class _MainScreenState extends State<MainScreen> {
         title = 'Recipes';
         break;
       case 1:
-        title = 'Bookmarks';
-        break;
-      case 2:
-        title = 'Groceries';
+        title = 'Saved Items';
         break;
     }
     return SafeArea(
@@ -75,13 +71,8 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(
                 icon: SvgPicture.asset('assets/images/icon_bookmarks.svg',
                     color: _selectedIndex == 1 ? green : Colors.grey,
-                    semanticsLabel: 'Bookmarks'),
-                label: 'Bookmarks'),
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset('assets/images/icon_shopping_list.svg',
-                    color: _selectedIndex == 2 ? green : Colors.grey,
-                    semanticsLabel: 'Groceries'),
-                label: 'Groceries'),
+                    semanticsLabel: 'Saved Items'),
+                label: 'Saved Items'),
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: green,
