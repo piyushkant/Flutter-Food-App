@@ -1,4 +1,4 @@
-# ChatX
+# FoodX
 
 - A food items search app for iOS/android/web
 - Used Flutter with Dart programming language to create a basic cross-platform application
