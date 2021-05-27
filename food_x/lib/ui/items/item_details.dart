@@ -64,14 +64,38 @@ class RecipeDetails extends StatelessWidget {
                 Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: Chip(
-                      label: Text(getCalories(recipe.calories)),
+                      label: Text("Calories: " + recipe.calories.toString() + " kcal"),
                     )),
                 const SizedBox(
                   height: 16,
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Chip(
+                      label: Text("Protein: " + "230.72689680763318" + "g"),
+                    )),
+                const SizedBox(
+                  height: 16,
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Chip(
+                      label: Text("Fat: " + "274.4489059026023" + "g"),
+                    )),
+                const SizedBox(
+                  height: 16,
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Chip(
+                      label: Text("Carbs: " + "175.96206666631727" + "g"),
+                    )),
+                const SizedBox(
+                  height: 20,
+                ),
                 Center(
                   child: RaisedButton.icon(
-                    color: green,
+                    color: Colors.lightBlue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.0),
                     ),
@@ -84,7 +108,7 @@ class RecipeDetails extends StatelessWidget {
                       color: Colors.white,
                     ),
                     label: const Text(
-                      'Bookmark',
+                      'Save',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

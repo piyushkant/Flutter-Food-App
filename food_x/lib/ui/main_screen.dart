@@ -2,9 +2,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'myrecipes/saved_item_list.dart';
-import 'recipes/recipe_list.dart';
-import 'shopping/shopping_list.dart';
+import 'items/saved_item_list.dart';
+import 'items/search_item_list.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -53,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
     String title;
     switch (_selectedIndex) {
       case 0:
-        title = 'Recipes';
+        title = 'FoodX';
         break;
       case 1:
         title = 'Saved Items';

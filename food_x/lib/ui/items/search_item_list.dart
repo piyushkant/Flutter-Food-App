@@ -11,8 +11,8 @@ import '../../network/model_response.dart';
 import '../../network/recipe_model.dart';
 import '../../network/service_interface.dart';
 import '../colors.dart';
-import '../recipe_card.dart';
-import '../recipes/recipe_details.dart';
+import '../item_card.dart';
+import '../items/item_details.dart';
 
 class RecipeList extends StatefulWidget {
   const RecipeList({Key key}) : super(key: key);
